@@ -15,6 +15,9 @@ def main():
     # drgnfly.dat \ Dragonfly Canard airfoil
     extradorso3, intradorso3 = read_data("drgnfly.dat", "r")
 
+    x_theta = dist_theta(size=500)
+    x_theta.sort()
+
     # Catching the values of 'x'
     x1 = catch_values(extradorso1)
     x2 = catch_values(intradorso1)
@@ -83,35 +86,45 @@ def main():
     print_polynomials(x6, a6, b6, c6, d6)
 
     # Interpolation with the points from (0.5 * (1 - np.cos(theta)))
-    x_theta1, values1 = interpolate(x1, a1, b1, c1, d1)
-    x_theta2, values2 = interpolate(x2, a2, b2, c2, d2)
+    values1 = interpolate(x1, x_theta, a1, b1, c1, d1)
+    values2 = interpolate(x2, x_theta, a2, b2, c2, d2)
 
-    x_theta3, values3 = interpolate(x3, a3, b3, c3, d3)
-    x_theta4, values4 = interpolate(x4, a4, b4, c4, d4)
+    values3 = interpolate(x3, x_theta, a3, b3, c3, d3)
+    values4 = interpolate(x4, x_theta, a4, b4, c4, d4)
 
-    x_theta5, values5 = interpolate(x5, a5, b5, c5, d5)
-    x_theta6, values6 = interpolate(x6, a6, b6, c6, d6)
+    values5 = interpolate(x5, x_theta, a5, b5, c5, d5)
+    values6 = interpolate(x6, x_theta, a6, b6, c6, d6)
 
     fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, figsize=(12,7.5))
 
+    max_dist = 0
+    pontos_max = [(0,0),(0,0)]
+    for i in range(len(x_theta)):
+        distance = np.sqrt( (x_theta[i] - x_theta[i])**2 + (values1[i] - values2[i])**2)
+        if distance >= max_dist:
+            max_dist = distance
+            pontos_max = [(x_theta[i], values1[i]), (x_theta[i], values2[i])]
+
+    print(f'{max_dist=}\n {pontos_max=}')
+
     ax1.set_title('Rolf Girsberger RG 8 airfoil')
-    ax1.plot(x_theta1, values1, label='cubic spline', color='blue', linestyle='--', marker='*', markersize=3)
-    ax1.plot(extradorso1[:, 0], extradorso1[:, 1], label='data', color='red', linestyle='--', marker='o', markersize=4)
-    ax1.plot(x_theta2, values2, color='blue', linestyle='--', marker='*', markersize=3)
-    ax1.plot(intradorso1[:, 0], intradorso1[:, 1], color='red', linestyle='--', marker='o', markersize=4)
+    ax1.plot(x_theta, values1, label='cubic spline', color='blue', linestyle='--', marker='*', markersize=3)
+    #ax1.plot(extradorso1[:, 0], extradorso1[:, 1], label='data', color='red', linestyle='--', marker='o', markersize=4)
+    ax1.plot(x_theta, values2, color='blue', linestyle='--', marker='*', markersize=3)
+    #ax1.plot(intradorso1[:, 0], intradorso1[:, 1], color='red', linestyle='--', marker='o', markersize=4)
     ax1.grid(visible=True, linestyle='--')
 
     ax2.set_title('ARA - D13% thick propeller airfoil')
-    ax2.plot(x_theta3, values3, color='blue', linestyle='--', marker='*', markersize=3)
+    ax2.plot(x_theta, values3, color='blue', linestyle='--', marker='*', markersize=3)
     ax2.plot(extradorso2[:, 0], extradorso2[:, 1], color='red', linestyle='--', marker='o', markersize=4)
-    ax2.plot(x_theta4, values4, color='blue', linestyle='--', marker='*', markersize=3)
+    ax2.plot(x_theta, values4, color='blue', linestyle='--', marker='*', markersize=3)
     ax2.plot(intradorso2[:, 0], intradorso2[:, 1], color='red', linestyle='--', marker='o', markersize=4)
     ax2.grid(visible=True, linestyle='--')
 
     ax3.set_title('Dragonfly Canard airfoil')
-    ax3.plot(x_theta5, values5, color='blue', linestyle='--', marker='*', markersize=3)
+    ax3.plot(x_theta, values5, color='blue', linestyle='--', marker='*', markersize=3)
     ax3.plot(extradorso3[:, 0], extradorso3[:, 1], color='red', linestyle='--', marker='o', markersize=4)
-    ax3.plot(x_theta6, values6, color='blue', linestyle='--', marker='*', markersize=3)
+    ax3.plot(x_theta, values6, color='blue', linestyle='--', marker='*', markersize=3)
     ax3.plot(intradorso3[:, 0], intradorso3[:, 1], color='red', linestyle='--', marker='o', markersize=4)
     ax3.grid(visible=True, linestyle='--')
 
@@ -120,6 +133,7 @@ def main():
     ax1.legend(handles=[blue_lines, red_lines])
     plt.tight_layout()
     plt.show()
+    print()
 
 
 def read_data(name, mode):
@@ -151,10 +165,8 @@ def dist_theta(size=500):
     return np.array(0.5 * (1 - np.cos(theta)))
 
 
-def interpolate(x, a, b, c, d):
+def interpolate(x, x_theta, a, b, c, d):
     # Interpolation with the points from 'dist_theta'
-    x_theta = dist_theta(size=500)
-    x_theta.sort()
     values = []
     for x_i in x_theta:
         for i in range(len(x) - 1):
@@ -162,7 +174,7 @@ def interpolate(x, a, b, c, d):
                 h = (x_i - x[i])
                 values.append(a[i] + b[i] * h + c[i] * h ** 2 + d[i] * h ** 3)
 
-    return x_theta, np.array(values)
+    return np.array(values)
 
 
 def catch_values(x, index=0):
