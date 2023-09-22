@@ -18,7 +18,7 @@ def main():
     x_theta = dist_theta(size=500)
     x_theta.sort()
 
-    # Catching the values of 'x'
+    # Catching the values of 'x' from the data
     x1 = catch_values(extradorso1)
     x2 = catch_values(intradorso1)
 
@@ -88,30 +88,24 @@ def main():
     # Interpolation with the points from (0.5 * (1 - np.cos(theta)))
     values1 = interpolate(x1, x_theta, a1, b1, c1, d1)
     values2 = interpolate(x2, x_theta, a2, b2, c2, d2)
+    maximum_thickness1, max_points1 = max_thickness(x_theta, values1, values2)
 
     values3 = interpolate(x3, x_theta, a3, b3, c3, d3)
     values4 = interpolate(x4, x_theta, a4, b4, c4, d4)
+    maximum_thickness2, max_points2 = max_thickness(x_theta, values3, values4)
 
     values5 = interpolate(x5, x_theta, a5, b5, c5, d5)
     values6 = interpolate(x6, x_theta, a6, b6, c6, d6)
+    maximum_thickness3, max_points3 = max_thickness(x_theta, values5, values6)
 
     fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, figsize=(12,7.5))
 
-    max_dist = 0
-    pontos_max = [(0,0),(0,0)]
-    for i in range(len(x_theta)):
-        distance = np.sqrt( (x_theta[i] - x_theta[i])**2 + (values1[i] - values2[i])**2)
-        if distance >= max_dist:
-            max_dist = distance
-            pontos_max = [(x_theta[i], values1[i]), (x_theta[i], values2[i])]
-
-    print(f'{max_dist=}\n {pontos_max=}')
-
     ax1.set_title('Rolf Girsberger RG 8 airfoil')
     ax1.plot(x_theta, values1, label='cubic spline', color='blue', linestyle='--', marker='*', markersize=3)
-    #ax1.plot(extradorso1[:, 0], extradorso1[:, 1], label='data', color='red', linestyle='--', marker='o', markersize=4)
+    ax1.plot(extradorso1[:, 0], extradorso1[:, 1], label='data', color='red', linestyle='--', marker='o', markersize=4)
     ax1.plot(x_theta, values2, color='blue', linestyle='--', marker='*', markersize=3)
-    #ax1.plot(intradorso1[:, 0], intradorso1[:, 1], color='red', linestyle='--', marker='o', markersize=4)
+    ax1.plot(intradorso1[:, 0], intradorso1[:, 1], color='red', linestyle='--', marker='o', markersize=4)
+    ax1.plot((max_points1[0][0], max_points1[1][0]), (max_points1[0][1], max_points1[1][1]), color='blue', marker='o', markersize='6')
     ax1.grid(visible=True, linestyle='--')
 
     ax2.set_title('ARA - D13% thick propeller airfoil')
@@ -119,6 +113,7 @@ def main():
     ax2.plot(extradorso2[:, 0], extradorso2[:, 1], color='red', linestyle='--', marker='o', markersize=4)
     ax2.plot(x_theta, values4, color='blue', linestyle='--', marker='*', markersize=3)
     ax2.plot(intradorso2[:, 0], intradorso2[:, 1], color='red', linestyle='--', marker='o', markersize=4)
+    ax2.plot((max_points2[0][0], max_points2[1][0]), (max_points2[0][1], max_points2[1][1]), color='blue', marker='o', markersize='6')
     ax2.grid(visible=True, linestyle='--')
 
     ax3.set_title('Dragonfly Canard airfoil')
@@ -126,6 +121,7 @@ def main():
     ax3.plot(extradorso3[:, 0], extradorso3[:, 1], color='red', linestyle='--', marker='o', markersize=4)
     ax3.plot(x_theta, values6, color='blue', linestyle='--', marker='*', markersize=3)
     ax3.plot(intradorso3[:, 0], intradorso3[:, 1], color='red', linestyle='--', marker='o', markersize=4)
+    ax3.plot((max_points3[0][0], max_points3[1][0]), (max_points3[0][1], max_points3[1][1]), color='blue', marker='o', markersize='6')
     ax3.grid(visible=True, linestyle='--')
 
     blue_lines = mlines.Line2D([], [], color='blue', marker='*', markersize=10, label='Cubic splines')
@@ -136,13 +132,12 @@ def main():
     print()
 
 
-def read_data(name, mode):
+def read_data(name, mode='r'):
     with open(name, mode) as file:
         dados = []
         meio, i = 0, 0
 
         for line in file.readlines():
-            if i == 0: name = line
             if i > 2:
                 data = line.split()
                 if not data:
@@ -254,5 +249,16 @@ def print_polynomials(x, a, b, c, d):
               f'{d[i]:.7f}*(x - {x[i]:.7f})^3')
     print('\n')
 
+
+def max_thickness(x, y_extradorso, y_intradorso):
+    thickness = 0
+    maximum_points = [(0,0), (0,0)]
+    for i in range(len(x)):
+        distance = np.sqrt( (x[i] - x[i])**2 + (y_extradorso[i] - y_intradorso[i])**2)
+        if distance >= thickness:
+            thickness = distance
+            maximum_points = [(x[i], y_extradorso[i]), (x[i], y_intradorso[i])]
+
+    return thickness, maximum_points
 
 main()
