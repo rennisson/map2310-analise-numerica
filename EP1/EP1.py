@@ -72,13 +72,13 @@ def main():
     # Step 6
     b1, c1, d1 = coeff_b_c_d(x1, h1, a1, u1, z1)
     b2, c2, d2 = coeff_b_c_d(x2, h2, a2, u2, z2)
-    print_polynomials(x1, a1, b1, c1, d1)
-    print_polynomials(x2, a2, b2, c2, d2)
+    # print_polynomials(x1, a1, b1, c1, d1)
+    # print_polynomials(x2, a2, b2, c2, d2)
 
     b3, c3, d3 = coeff_b_c_d(x3, h3, a3, u3, z3)
     b4, c4, d4 = coeff_b_c_d(x4, h4, a4, u4, z4)
-    print_polynomials(x3, a3, b3, c3, d3)
-    print_polynomials(x4, a4, b4, c4, d4)
+    # print_polynomials(x3, a3, b3, c3, d3)
+    # print_polynomials(x4, a4, b4, c4, d4)
 
     b5, c5, d5 = coeff_b_c_d(x5, h5, a5, u5, z5)
     b6, c6, d6 = coeff_b_c_d(x6, h6, a6, u6, z6)
@@ -89,46 +89,50 @@ def main():
     values1 = interpolate(x1, x_theta, a1, b1, c1, d1)
     values2 = interpolate(x2, x_theta, a2, b2, c2, d2)
     maximum_thickness1, max_points1 = max_thickness(x_theta, values1, values2)
+    print(f'{maximum_thickness1=}\n{max_points1=}')
 
     values3 = interpolate(x3, x_theta, a3, b3, c3, d3)
     values4 = interpolate(x4, x_theta, a4, b4, c4, d4)
     maximum_thickness2, max_points2 = max_thickness(x_theta, values3, values4)
+    print(f'{maximum_thickness2=}\n{max_points2=}')
 
     values5 = interpolate(x5, x_theta, a5, b5, c5, d5)
     values6 = interpolate(x6, x_theta, a6, b6, c6, d6)
     maximum_thickness3, max_points3 = max_thickness(x_theta, values5, values6)
+    print(f'{maximum_thickness3=}\n{max_points3=}')
 
-    fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, figsize=(12,7.5))
+    fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, figsize=(7,8))
 
     ax1.set_title('Rolf Girsberger RG 8 airfoil')
-    ax1.plot(x_theta, values1, label='cubic spline', color='blue', linestyle='--', marker='*', markersize=3)
+    #ax1.plot(x_theta, values1, label='cubic spline', color='blue', linestyle='--', marker='*', markersize=3)
     ax1.plot(extradorso1[:, 0], extradorso1[:, 1], label='data', color='red', linestyle='--', marker='o', markersize=4)
-    ax1.plot(x_theta, values2, color='blue', linestyle='--', marker='*', markersize=3)
+    #ax1.plot(x_theta, values2, color='blue', linestyle='--', marker='*', markersize=3)
     ax1.plot(intradorso1[:, 0], intradorso1[:, 1], color='red', linestyle='--', marker='o', markersize=4)
     ax1.plot((max_points1[0][0], max_points1[1][0]), (max_points1[0][1], max_points1[1][1]), color='blue', marker='o', markersize='6')
     ax1.grid(visible=True, linestyle='--')
 
     ax2.set_title('ARA - D13% thick propeller airfoil')
-    ax2.plot(x_theta, values3, color='blue', linestyle='--', marker='*', markersize=3)
+    #ax2.plot(x_theta, values3, color='blue', linestyle='--', marker='*', markersize=3)
     ax2.plot(extradorso2[:, 0], extradorso2[:, 1], color='red', linestyle='--', marker='o', markersize=4)
-    ax2.plot(x_theta, values4, color='blue', linestyle='--', marker='*', markersize=3)
+    #ax2.plot(x_theta, values4, color='blue', linestyle='--', marker='*', markersize=3)
     ax2.plot(intradorso2[:, 0], intradorso2[:, 1], color='red', linestyle='--', marker='o', markersize=4)
     ax2.plot((max_points2[0][0], max_points2[1][0]), (max_points2[0][1], max_points2[1][1]), color='blue', marker='o', markersize='6')
     ax2.grid(visible=True, linestyle='--')
 
     ax3.set_title('Dragonfly Canard airfoil')
-    ax3.plot(x_theta, values5, color='blue', linestyle='--', marker='*', markersize=3)
+    #ax3.plot(x_theta, values5, color='blue', linestyle='--', marker='*', markersize=3)
     ax3.plot(extradorso3[:, 0], extradorso3[:, 1], color='red', linestyle='--', marker='o', markersize=4)
-    ax3.plot(x_theta, values6, color='blue', linestyle='--', marker='*', markersize=3)
+    #ax3.plot(x_theta, values6, color='blue', linestyle='--', marker='*', markersize=3)
     ax3.plot(intradorso3[:, 0], intradorso3[:, 1], color='red', linestyle='--', marker='o', markersize=4)
     ax3.plot((max_points3[0][0], max_points3[1][0]), (max_points3[0][1], max_points3[1][1]), color='blue', marker='o', markersize='6')
     ax3.grid(visible=True, linestyle='--')
 
     blue_lines = mlines.Line2D([], [], color='blue', marker='*', markersize=10, label='Cubic splines')
     red_lines = mlines.Line2D([], [], color='red', marker='o', markersize=8, label='Real data')
-    ax1.legend(handles=[blue_lines, red_lines])
+    #ax1.legend(handles=[blue_lines, red_lines])
     plt.tight_layout()
     plt.show()
+    fig.savefig('aaaaaaaaaa.jpg')
     print()
 
 
@@ -243,10 +247,10 @@ def coeff_b_c_d(x, h, a, u, z):
 def print_polynomials(x, a, b, c, d):
     print(f'Lista dos polinômios interpoladores S(x), para x = 0, ..., {len(x)-1}')
     for i in range(len(x)):
-        print(f'S({i}) = {a[i]:.7f} + '
-              f'{b[i]:.7f}*(x - {x[i]:.7f}) +'
-              f'{c[i]:.7f}*(x - {x[i]:.7f})^2 +'
-              f'{d[i]:.7f}*(x - {x[i]:.7f})^3')
+        print(f'S_{i}(x) & {a[i]:.7f} + '
+              f'{b[i]:.7f}(x - {x[i]:.3f}) + '
+              f'{c[i]:.7f}(x - {x[i]:.3f})^2 + '
+              f'{d[i]:.7f}(x - {x[i]:.3f})^3')
     print('\n')
 
 
