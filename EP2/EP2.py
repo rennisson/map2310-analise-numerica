@@ -1,12 +1,12 @@
 import numpy as np
 import sympy as smp
-import scipy as sp
 import matplotlib.pyplot as plt
 
-
-def main():
+def pade_approximation():
     x = smp.symbols('x', real=True)
+    # FUNÇÃO 1
     # f = smp.exp(x) * smp.sin(x) * smp.cos(x)
+    # FUNÇÃO 2
     f = smp.exp(-x) * smp.sin(x) * smp.cos(x)**2
     text = input("Digite dois inteiros positivos para m e n: ")
     m, n = text.split(", ")
@@ -40,7 +40,7 @@ def main():
             if j <= m:
                 b[i - 1][n + j - 1] = -1 * a[i - j - 1]
 
-        for j in range(n + i + 1, N + 1):
+        for j in range(n + i, N + 1):
             b[i - 1][j - 1] = 0
 
         b[i - 1][N] = a[i - 1]
@@ -56,13 +56,19 @@ def main():
     p, q = smp.Poly.from_list(p, x), smp.Poly.from_list(q, x)
     r = p / q
 
+    # Polinômio de MacLaurin a partir do array 'a'
     maclaurin = smp.Poly.from_list(np.flip(a), x)
     f_values = []
     r_values = []
     maclaurin_values = []
+
+    # 300 pontos no intervalo [0, 1]
     x1 = np.linspace(0., 1.0, 300)
+
     # Variaveis:
-    # norma do erro l^2, ponto do erro l^2, norma do erro maximo, ponto do erro maximo
+    # max_err_q: norma do erro l^2, ponto_max_q: ponto do erro l^2, err_max: norma do erro maximo,
+    # ponto_max: ponto do erro maximo, mac_err_max: norma do maximo de maclaurin, mac_err_q: norma de l^2
+    # mac_ponto_max_q: ponto do erro l^2 de maclaurin, mac_ponto_max: ponto do erro maximo de maclaurin
     max_err_q, ponto_max_q, err_max, ponto_max, mac_err_max, mac_err_q, mac_ponto_max_q,\
         mac_ponto_max = 0, 0, 0, 0, 0, 0, 0, 0
 
@@ -72,6 +78,7 @@ def main():
         f_values.append(y1)
         r_values.append(y2)
         maclaurin_values.append(y3)
+
         # Calcula a norma de l^2
         aux = np.sqrt(float((value - y1)**2) + float((value - y2)**2))
         if aux >= max_err_q:
@@ -114,4 +121,4 @@ def main():
     plt.show()
 
 
-main()
+pade_approximation()
