@@ -7,7 +7,7 @@ def Pade_Maclaurin(N, m):
     N += 1
     n = N - m
     x = smp.Symbol('x')
-    f = smp.exp(-x)
+    f = smp.exp(x) * smp.sin(x) * smp.cos(x)
     coef_maclaurin = np.zeros(N)
     for i in range(0, N):
         df = smp.diff(f, x, i)
@@ -56,4 +56,4 @@ def Pade_Maclaurin(N, m):
     return 1
 
 
-Pade_Maclaurin(5, 2)
+Pade_Maclaurin(6, 1)
